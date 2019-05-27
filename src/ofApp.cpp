@@ -14,8 +14,16 @@ void ofApp::setup()
 //--------------------------------------------------------------
 void ofApp::update()
 {
+    //movimiento de la pelota
     posPelota->x += velPelota->x * ofGetLastFrameTime();
     posPelota->y += velPelota->y * ofGetLastFrameTime();
+    
+    //movimiento de las paletas
+    if( w)
+        posPaletaP1 -> y -= 20;
+    if( s)
+        posPaletaP1 -> y += 20;
+    
     
     //rebote
     if( posPelota->x < 0)
@@ -54,13 +62,22 @@ void ofApp::draw()
 }
 
 //--------------------------------------------------------------
-void ofApp::keyPressed(int key){
-
+void ofApp::keyPressed(int key)
+{
+    if(key=='w') w =true;
+    if(key=='a') a =true;
+    if(key=='s') s =true;
+    if(key=='d') d =true;
+    
 }
 
 //--------------------------------------------------------------
-void ofApp::keyReleased(int key){
-
+void ofApp::keyReleased(int key)
+{
+    if(key=='w') w =false;
+    if(key=='a') a =false;
+    if(key=='s') s =false;
+    if(key=='d') d =false;
 }
 
 //--------------------------------------------------------------

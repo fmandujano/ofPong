@@ -28,5 +28,8 @@ class ofApp : public ofBaseApp{
     ofVec2f * posPaletaP1;
     ofVec2f * posPaletaP2;
     ofVec2f * sizePaleta;
+    
+    //variables para determinar el estado de las teclas
+    bool w,a,s,d;
 		
 };
