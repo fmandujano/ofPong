@@ -1,6 +1,8 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxGui.h"
+#include "ofxNetwork.h"
 
 class ofApp : public ofBaseApp{
 
@@ -19,9 +21,30 @@ class ofApp : public ofBaseApp{
 		void mouseExited(int x, int y);
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
+        void gotMessage(ofMessage msg);
     
-        //variables del juego
+    void updateServer();
+    void updateClient();
+    
+    void drawMenu();
+    void drawServer();
+    void drawClient();
+    
+    //estados de la app
+    enum EstadoApp
+    {
+        menu,server, client
+    };
+    EstadoApp estado;
+    
+    //variables para el gui
+    ofxPanel mainMenu;
+    ofxButton botonCrearPartida;
+    ofxButton botonConectarPartida;
+    void crearPartida();
+    void conectarPartida();
+    
+    //variables del juego
     ofVec2f * posPelota;
     ofVec2f * velPelota;
     
