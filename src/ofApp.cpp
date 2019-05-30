@@ -62,8 +62,10 @@ void ofApp::updateClient()
     if( s)
         posPaletaP2 -> y += 10;
     
-    char * m = "hola soy un cliente";
-    udpManager.Send(m , strlen(m));
+    
+    sprintf(mensaje, "%f,%f\n", posPaletaP2 -> x, posPaletaP2 -> y);
+    
+    udpManager.Send(  mensaje, strlen(mensaje));
     
     if( posPaletaP1->y < 0 ) posPaletaP1->y =1;
     if( posPaletaP1->y >(ofGetHeight() - sizePaleta->y) ) posPaletaP1->y =ofGetHeight() - sizePaleta->y;
@@ -76,6 +78,18 @@ void ofApp::updateServer()
     memset(mensaje, 0, 100);
     
     udpManager.Receive(mensaje, 100);
+    
+    //leer el mov de la paleta del P2
+    char * buf;
+    buf = strtok(mensaje, ",");
+    if( buf != NULL)
+    {
+        //en este punto buf contiene el valor en X
+        posPaletaP2->x = atof(buf);
+        buf = strtok(NULL, ",");
+        //ahora buf contiene el valor en y
+        posPaletaP2->y = atof(buf);
+    }
     
     //movimiento de la pelota
     posPelota->x += velPelota->x * ofGetLastFrameTime();
