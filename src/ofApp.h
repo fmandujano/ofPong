@@ -4,6 +4,8 @@
 #include "ofxGui.h"
 #include "ofxNetwork.h"
 
+#define PORT 6666
+
 class ofApp : public ofBaseApp{
 
 	public:
@@ -51,8 +53,13 @@ class ofApp : public ofBaseApp{
     ofVec2f * posPaletaP1;
     ofVec2f * posPaletaP2;
     ofVec2f * sizePaleta;
+    float rPelota;
     
     //variables para determinar el estado de las teclas
     bool w,a,s,d;
+    
+    //variables para red
+    ofxUDPManager udpManager;
+    char mensaje[100]; // para ver que mensaje llego
 		
 };

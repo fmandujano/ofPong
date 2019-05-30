@@ -6,6 +6,8 @@ void ofApp::setup()
     posPelota = new ofVec2f( ofGetWidth()/2, ofGetHeight()/2);
     velPelota = new ofVec2f(120,-120);
     
+    rPelota = 20;
+    
     sizePaleta = new ofVec2f( 25, 100);
     posPaletaP1 = new ofVec2f( 15, ofGetHeight()/2 - sizePaleta->y/2);
     posPaletaP2 = new ofVec2f( ofGetWidth()-sizePaleta->x - 15, ofGetHeight()/2 - sizePaleta->y/2);
@@ -21,16 +23,26 @@ void ofApp::setup()
     botonConectarPartida.addListener(this, &ofApp::conectarPartida);
     botonCrearPartida.addListener( this, &ofApp::crearPartida);
     
-    
+    strcpy(mensaje, "");
 }
 
+//setup server
 void ofApp::crearPartida()
 {
     estado = EstadoApp::server;
+    udpManager.Create();
+    udpManager.Bind(PORT);
+    udpManager.SetNonBlocking(true);
+    
 }
+
+//setup client
 void ofApp::conectarPartida()
 {
     estado = EstadoApp::client;
+    udpManager.Create();
+    udpManager.Connect("127.0.0.1", PORT);
+    udpManager.SetNonBlocking(true);
 }
 
 void ofApp::update()
@@ -50,6 +62,9 @@ void ofApp::updateClient()
     if( s)
         posPaletaP2 -> y += 10;
     
+    char * m = "hola soy un cliente";
+    udpManager.Send(m , strlen(m));
+    
     if( posPaletaP1->y < 0 ) posPaletaP1->y =1;
     if( posPaletaP1->y >(ofGetHeight() - sizePaleta->y) ) posPaletaP1->y =ofGetHeight() - sizePaleta->y;
     
@@ -58,6 +73,10 @@ void ofApp::updateClient()
 //--------------------------------------------------------------
 void ofApp::updateServer()
 {
+    memset(mensaje, 0, 100);
+    
+    udpManager.Receive(mensaje, 100);
+    
     //movimiento de la pelota
     posPelota->x += velPelota->x * ofGetLastFrameTime();
     posPelota->y += velPelota->y * ofGetLastFrameTime();
@@ -75,25 +94,25 @@ void ofApp::updateServer()
     
     
     //rebote
-    if( posPelota->x < 0)
+    if( posPelota->x-rPelota < 0 )
     {
-        posPelota->x = 1;
+        posPelota->x = rPelota;
         velPelota->x *= -1;
     }
-    if( posPelota->x >  ofGetWidth())
+    if( posPelota->x + rPelota  >  ofGetWidth())
     {
-        posPelota->x = ofGetWidth() ;
+        posPelota->x = ofGetWidth() - rPelota ;
         velPelota->x *= -1;
     }
-    if( posPelota->y < 0 )
+    if( posPelota->y - rPelota< 0 )
     {
-        posPelota->y = 1;
+        posPelota->y = rPelota;
         velPelota->y *= -1;
     }
        
-    if(posPelota->y >  ofGetHeight())
+    if(posPelota->y + rPelota>  ofGetHeight())
     {
-        posPelota->y = ofGetHeight();
+        posPelota->y = ofGetHeight() - rPelota;
         velPelota->y *= -1;
     }
 }
@@ -120,7 +139,7 @@ void ofApp::drawClient()
     ofDrawBitmapString("CONECTADO COMO CLIENTE", 5, 15);
     
     ofSetColor(255, 0, 0);
-    ofDrawCircle( posPelota->x, posPelota->y, 20);
+    ofDrawCircle( posPelota->x, posPelota->y, rPelota);
     
     ofSetColor(0, 0, 255);
     ofDrawRectangle(posPaletaP1->x, posPaletaP1->y, sizePaleta->x, sizePaleta->y);
@@ -131,9 +150,10 @@ void ofApp::drawServer()
 {
     ofSetColor(0, 0, 0);
     ofDrawBitmapString("HOSTING AS SERVER", 5, 15);
+    ofDrawBitmapString(mensaje, 5, 40);
     
     ofSetColor(255, 0, 0);
-    ofDrawCircle( posPelota->x, posPelota->y, 20);
+    ofDrawCircle( posPelota->x, posPelota->y, rPelota);
     
     ofSetColor(0, 0, 255);
     ofDrawRectangle(posPaletaP1->x, posPaletaP1->y, sizePaleta->x, sizePaleta->y);
